@@ -1,16 +1,22 @@
-
-import csv
 import sqlite3
+import os
 
-conn = sqlite3.connect('natlpark.db')
-cur = conn.cursor()
-cur.execute("""DROP TABLE IF EXISTS natlpark""")
-cur.execute("""CREATE TABLE natlpark
-            (name text, state text, year integer, area float)""")
+DATABASE = '/home/ubuntu/flaskapp/users.db'
 
-with open('nationalparks.csv', 'r') as f:
-    reader = csv.reader(f.readlines()[1:])  # exclude header line
-    cur.executemany("""INSERT INTO natlpark VALUES (?,?,?,?)""",
-                    (row for row in reader))
-conn.commit()
-conn.close()
+def create_db():
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(DATABASE), exist_ok=True)
+    
+    conn = sqlite3.connect(DATABASE)
+    c = conn.cursor()
+    c.execute("DROP TABLE IF EXISTS users")
+    # Table encompasses requirements 4a, 4b, and 4e
+    c.execute('''CREATE TABLE users 
+                 (username TEXT PRIMARY KEY, password TEXT, firstname TEXT, 
+                  lastname TEXT, email TEXT, address TEXT, filename TEXT, wordcount INTEGER)''')
+    conn.commit()
+    conn.close()
+    print("Database and users table created successfully.")
+
+if __name__ == '__main__':
+    create_db()
